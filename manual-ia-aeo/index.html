@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faça a IA Recomendar o Seu Negócio — Manual de AEO</title>
+<style>
+  :root{
+    --bg:#0c0a09; --panel:#1a1613; --panel2:#231c17;
+    --text:#f3ede7; --muted:#b3a99f; --line:#3a2f26;
+    --accent:#f97316; --accent2:#e8530e; --accent-ink:#1a0c03;
+    --cream:#fbede6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;font-weight:700;padding:14px 26px;border-radius:999px;font-size:16px;
+    transition:transform .15s ease,box-shadow .15s ease;box-shadow:0 8px 30px rgba(232,83,14,.3);
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(232,83,14,.5)}
+  .btn.lg{padding:18px 38px;font-size:18px}
+
+  header.bar{position:sticky;top:0;z-index:20;background:rgba(12,10,9,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+  .btn.nav{font-size:13px;line-height:1.2;max-width:330px;text-align:center;padding:10px 20px}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:17px}
+  .brand span{color:var(--accent)}
+
+  .hero{padding:60px 0 24px;text-align:center}
+  .badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--accent);background:rgba(232,83,14,.12);border:1px solid rgba(232,83,14,.35);padding:6px 14px;border-radius:999px;margin-bottom:22px}
+  h1{font-size:clamp(33px,5.6vw,54px);line-height:1.08;letter-spacing:-.03em;font-weight:800;margin-bottom:18px}
+  h1 .grad{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-size:clamp(17px,2.4vw,20px);color:var(--muted);max-width:680px;margin:0 auto 22px}
+  .punch{font-size:clamp(18px,2.6vw,22px);font-weight:700;max-width:680px;margin:0 auto 30px;line-height:1.4}
+  .punch em{color:var(--accent);font-style:normal}
+
+  .video{margin:40px auto 8px;max-width:760px}
+  .ratio{position:relative;padding-top:56.25%;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+    background:radial-gradient(120% 120% at 50% 0%,#2a2017,#120d0a)}
+  .ratio .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--muted)}
+  .play{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;box-shadow:0 10px 40px rgba(232,83,14,.5)}
+  .play::after{content:"";border-style:solid;border-width:14px 0 14px 22px;border-color:transparent transparent transparent #fff;margin-left:5px}
+
+  section{padding:44px 0}
+  .eyebrow{color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;text-align:center}
+  h2{font-size:clamp(26px,3.6vw,36px);letter-spacing:-.02em;text-align:center;margin-bottom:10px}
+  .lead{color:var(--muted);text-align:center;max-width:640px;margin:0 auto 30px}
+
+  /* framework quote */
+  .quote{background:var(--cream);color:#1a0c03;border-left:6px solid var(--accent2);border-radius:10px;
+    padding:22px 26px;max-width:760px;margin:0 auto;font-size:18px;font-style:italic;font-weight:600;line-height:1.45}
+
+  /* steps */
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 26px 22px;margin-bottom:16px;
+    display:grid;grid-template-columns:54px 1fr;gap:18px}
+  @media(max-width:560px){.step{grid-template-columns:1fr;gap:10px}}
+  .step .num{width:54px;height:54px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:20px;letter-spacing:-.01em;margin-bottom:6px}
+  .step p{color:#d8cec5;font-size:15px;margin-bottom:8px}
+  .step p:last-child{margin-bottom:0}
+  .step b{color:var(--text)}
+  ul.bul{list-style:none;margin:6px 0}
+  ul.bul li{position:relative;padding:4px 0 4px 20px;color:#d8cec5;font-size:15px}
+  ul.bul li::before{content:"";position:absolute;left:0;top:13px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+
+  /* prompt boxes */
+  .prompt{background:var(--cream);color:#1a0c03;border-left:5px solid var(--accent2);border-radius:8px;
+    padding:12px 16px;margin:6px 0;font-style:italic;font-size:15px}
+  .when{display:inline-block;font-size:12px;font-weight:700;color:var(--accent);background:rgba(232,83,14,.12);
+    border-radius:6px;padding:2px 10px;margin-top:10px}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:720px){.stats{grid-template-columns:1fr}}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .stat .big{font-size:38px;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat p{color:#d8cec5;font-size:14px;margin-top:8px}
+  .stat small{display:block;color:var(--muted);font-size:12px;margin-top:8px}
+
+  .ctaband{background:linear-gradient(135deg,#2a1408,#1a0d06);border:1px solid rgba(232,83,14,.3);border-radius:24px;
+    padding:48px 30px;text-align:center;margin:10px 0}
+  .ctaband h2{margin-bottom:12px}
+  .ctaband p{color:var(--muted);max-width:580px;margin:0 auto 26px}
+
+  footer{border-top:1px solid var(--line);padding:34px 0 50px;color:var(--muted);font-size:13px;text-align:center}
+  .disc{max-width:680px;margin:0 auto 14px;font-size:12px;opacity:.8}
+  .swap{background:#3a2a0a;border:1px solid #6b4e12;color:#f5d486;font-size:12px;padding:10px 14px;border-radius:10px;margin:18px auto;max-width:760px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- TROCAR: o src do vídeo. CTAs já apontam para manualdedonos.com.br com UTMs. -->
+<header class="bar">
+  <div class="wrap">
+    <div class="brand">Manual de <span>Donos</span></div>
+    <a class="btn nav" href="https://manualdedonos.com.br/?utm_source=instagram&utm_medium=resource&utm_campaign=manual_ia_aeo&utm_content=nav_cta">Entre na comunidade e receba 1 manual como esse por semana.</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="badge">Manual de IA · Edição AEO</span>
+      <h1>Faça a IA Recomendar <span class="grad">o Seu Negócio</span></h1>
+      <p class="sub">AEO — Answer Engine Optimization. A arte de fazer a IA te escolher na hora de responder o seu cliente.</p>
+      <p class="punch">Acabou o jogo do dinheiro. Começou o jogo da reputação.<br>Quando a IA for responder, <em>ela vai te citar?</em></p>
+      <a class="btn lg" href="https://manualdedonos.com.br/?utm_source=instagram&utm_medium=resource&utm_campaign=manual_ia_aeo&utm_content=hero_cta">Entre na comunidade e receba 1 manual como esse por semana.</a>
+
+      <div class="video">
+        <div class="ratio">
+          <div class="ph">
+            <div class="play"></div>
+            <div>[ Embede aqui o mesmo Reels do CTA ]</div>
+          </div>
+          <!-- <iframe src="LINK_DO_SEU_VIDEO" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen></iframe> -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRAMEWORK -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">O framework</div>
+      <h2>Por 25 anos, quem pagava mais aparecia primeiro</h2>
+      <p class="lead">Agora seu cliente descreve o problema inteiro e a IA devolve uma resposta curta — com nome de empresa dentro. Quem está na resposta, ganha. Quem não está, sumiu. Sem segundo lugar, sem segunda página. E a IA não inventa quem recomendar: ela repete o que aprendeu lendo a internet.</p>
+      <div class="quote">"A IA recomenda quem ela conhece. Ela conhece quem é citado. É citado quem tem reputação espalhada nos lugares onde ela aprende."</div>
+    </div>
+  </section>
+
+  <!-- STEPS -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">O manual de implementação</div>
+      <h2>Cinco passos. Mão na massa.</h2>
+      <p class="lead">Os três primeiros você faz hoje, em uma hora. Os dois últimos são trabalho de reputação, que compõe com o tempo. Serve qualquer IA grátis: ChatGPT, Claude, Perplexity ou Gemini.</p>
+
+      <div class="step">
+        <div class="num">1</div>
+        <div>
+          <h3>O diagnóstico (o tapa na cara)</h3>
+          <p>Abre uma IA e faz a pergunta que o seu cliente faria <b>antes</b> de comprar de você. Não pergunta sobre você — pergunta como cliente:</p>
+          <div class="prompt">"Qual a melhor [sua categoria] em [sua cidade]?"</div>
+          <div class="prompt">"Quero [o resultado que seu cliente quer]. Quais empresas você recomenda no Brasil?"</div>
+          <div class="prompt">"Estou escolhendo entre opções de [seu produto/serviço]. Me ajuda a comparar as melhores."</div>
+          <p>Apareceu concorrente? Apareceu você? Agora pergunta direto: <b>"O que você sabe sobre [nome da sua empresa]?"</b> Na maioria dos casos a IA sabe pouco, sabe errado, ou não te conhece. Esse é o diagnóstico.</p>
+          <span class="when">⏱️ Faça hoje · 5 min · em 2 ou 3 IAs diferentes</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div>
+          <h3>O mapa de onde a IA aprende sobre você</h3>
+          <p>A IA não tem opinião própria — ela repete o que achou. Os lugares onde ela aprende:</p>
+          <ul class="bul">
+            <li>O seu site e o seu Perfil da Empresa no Google</li>
+            <li>Avaliações: Google, Reclame Aqui, redes</li>
+            <li>YouTube e podcasts</li>
+            <li>Reddit, fóruns e grupos onde o seu cliente conversa</li>
+            <li>Notícias, artigos e listas do seu nicho</li>
+            <li>Citações de terceiros (quando alguém fala de você sem ser você)</li>
+          </ul>
+          <p>Faz uma lista honesta: onde você aparece hoje? Onde está mudo? <b>Atalho:</b> pergunta pra própria IA de onde ela tirou o que sabe — a resposta é a sua lista de tarefas.</p>
+          <span class="when">⏱️ Faça hoje</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div>
+          <h3>A jogada do dono pequeno (ponto de vista)</h3>
+          <p>Aqui tamanho não manda. A IA premia quem responde melhor a pergunta — não quem gasta mais em anúncio. Marca grande com conteúdo genérico perde pra dono pequeno com ponto de vista de verdade.</p>
+          <p>Lista as <b>cinco perguntas</b> que o seu cliente faz antes de fechar (as objeções reais) e responde cada uma publicamente: com a sua experiência, opinião, número e o caso que você viveu. Publica no site, num vídeo curto, num post, ou numa resposta honesta dentro de um grupo. <b>A vivência é o que a IA não copia de outro lugar.</b></p>
+          <span class="when">⏱️ Faça hoje</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">4</div>
+        <div>
+          <h3>Merecer o topo (a reputação que a IA lê)</h3>
+          <p>Avaliação é o ativo mais subestimado de AEO. Pede avaliação no Google pra todo cliente satisfeito — vira rotina, não favor. Responde todas, as boas e as ruins. Reclame Aqui bem resolvido também conta.</p>
+          <p>E busca ser citado por outros: parceria, podcast, aparecer numa lista do seu nicho. Quando outro fala de você, a IA confia mais. É devagar, mas compõe — <b>cada citação é um tijolo.</b></p>
+          <span class="when">🧱 Compõe com o tempo</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">5</div>
+        <div>
+          <h3>Medir (sem isso, é achismo)</h3>
+          <p>Uma vez por mês, roda de novo as <b>mesmas perguntas exatas</b> do Passo 1 e salva as respostas. Acompanha: você apareceu? Em que posição, antes ou depois do concorrente? O que a IA falou de você está certo?</p>
+          <p>Pra quem tem site, o <b>Google Search Console</b> agora mostra dados de IA (Desempenho → Aparência na Pesquisa → AI Overviews e AI Mode).</p>
+          <span class="when">📊 1x por mês</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Por que essa conversa é agora</div>
+      <h2>Três números que explicam a virada</h2>
+      <div class="stats">
+        <div class="stat">
+          <div class="big">&lt;90%</div>
+          <p>A fatia do Google nas buscas caiu abaixo de 90% — a primeira vez de forma consistente desde 2015. A primeira rachadura em dez anos.</p>
+          <small>Fonte: Statcounter</small>
+        </div>
+        <div class="stat">
+          <div class="big">~89%</div>
+          <p>A barra branca virou resposta pronta. Com o AI Overview no topo, a DMG Media reportou queda de até ~89% no clique em certas buscas.</p>
+          <small>Fonte: Ahrefs · DMG Media</small>
+        </div>
+        <div class="stat">
+          <div class="big">77%</div>
+          <p>Dos americanos que usam o ChatGPT já o tratam como buscador. A busca não trocou de dono — ela se dividiu em duas frentes.</p>
+          <small>Fonte: Adobe Express</small>
+        </div>
+      </div>
+      <p class="lead" style="margin-top:30px">O cliente continua perguntando — só que agora ele ouve uma resposta em vez de folhear uma lista. Quem está na resposta, existe. Quem não está, não existe pra ele.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="wrap">
+      <div class="ctaband">
+        <div class="eyebrow">Pra fechar bem</div>
+        <h2>Faz o Passo 1 hoje. Leva cinco minutos.</h2>
+        <p>Esse manual é só o começo. Na comunidade do <b>Manual de Donos</b> você recebe <b>1 manual como esse por semana</b> e coloca a IA pra trabalhar dentro da sua empresa de ponta a ponta.</p>
+        <a class="btn lg" href="https://manualdedonos.com.br/?utm_source=instagram&utm_medium=resource&utm_campaign=manual_ia_aeo&utm_content=footer_cta">Entre na comunidade e receba 1 manual como esse por semana.</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="swap">⚠️ Falta só uma coisa: embede o <b>src do vídeo</b> (o seu Reels) no player do topo.</div>
+
+<footer>
+  <p class="disc">Manual de Donos · Manual de IA. Conteúdo educacional, de quem fez pra quem faz.</p>
+  <p>© 2026 · Atualizado jun/2026</p>
+</footer>
+
+</body>
+</html>
