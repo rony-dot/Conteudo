@@ -30,12 +30,18 @@ agendada** (com link de vídeo).
 - Proteção contra double-booking no banco (constraint de exclusão) + hold de 15 min
 - Painéis: aluno (minhas mentorias), mentor (sessões + ganhos), admin (mentores + reservas)
 
-### Modelo de pagamento (v1)
+### Modelo de pagamento — split automático (fiscal)
 
-A plataforma **recebe todo o valor** e registra o ganho líquido do mentor
-(`price − taxa`, taxa padrão **15%**, veja `PLATFORM_FEE_PERCENT`). O repasse ao
-mentor é feito manualmente/em lote no começo. O split automático (OAuth do
-Mercado Pago por mentor) é evolução da fase 2.
+Cada mentor **conecta a própria conta Mercado Pago** (OAuth). No checkout, a
+preferência é criada **na conta do mentor** com o campo `marketplace_fee` = a
+comissão da plataforma. O Mercado Pago **divide automaticamente**: deduz a taxa
+dele, depois a comissão da plataforma, e o **líquido cai direto na conta do
+mentor** (no CPF/CNPJ dele). A plataforma nunca fatura o valor cheio — só a
+comissão (padrão **15%**, veja `PLATFORM_FEE_PERCENT`). Isso dá a separação
+fiscal correta, sem repasse manual.
+
+Por isso, **publicar o perfil e receber reservas exige o mentor conectado** ao
+Mercado Pago (validado no onboarding e no agendamento).
 
 ## Como rodar localmente
 
@@ -54,7 +60,7 @@ Sem variáveis o app sobe, mas cadastro/pagamento reais não funcionam.
    para o `.env.local`.
 3. Aplique as migrations. Duas opções:
    - **SQL Editor**: cole e rode, em ordem, os arquivos de
-     `supabase/migrations/` (0001 → 0005).
+     `supabase/migrations/` (0001 → 0006).
    - **CLI**: `supabase link` e `supabase db push`.
 4. (Opcional) Rode `supabase/seed.sql` para popular mentores de exemplo.
 5. Em **Authentication → URL Configuration**, adicione
@@ -68,19 +74,37 @@ No SQL Editor:
 update public.profiles set role = 'admin' where id = 'UUID_DO_USUARIO';
 ```
 
-## Configuração do Mercado Pago
+## Configuração do Mercado Pago (Marketplace / split)
 
-1. Crie uma aplicação em https://www.mercadopago.com.br/developers.
-2. Use as **credenciais de teste** (sandbox) durante o desenvolvimento:
-   `Access Token` → `MERCADOPAGO_ACCESS_TOKEN`,
-   `Public Key` → `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY`.
-3. Configure o **webhook** apontando para `SEU_SITE/api/mp/webhook`
-   (evento: *Pagamentos*). Em produção use a URL pública (Vercel).
-4. Teste com os [cartões de teste](https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/additional-content/your-integrations/test/cards)
-   e Pix de teste.
+1. Crie uma aplicação em https://www.mercadopago.com.br/developers/panel/app,
+   escolhendo o modelo **"Pagamentos" com split / Marketplace**.
+2. Copie as credenciais para o `.env.local`:
+   - `Access Token` → `MERCADOPAGO_ACCESS_TOKEN`
+   - `Public Key` → `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY`
+   - `Client ID` → `MERCADOPAGO_CLIENT_ID`
+   - `Client Secret` → `MERCADOPAGO_CLIENT_SECRET`
+   Use as credenciais de **teste** durante o desenvolvimento.
+3. Em **Redirect URIs** da aplicação, cadastre exatamente a mesma URL de
+   `MERCADOPAGO_REDIRECT_URI` (ex.: `https://SEU_SITE/api/mp/oauth/callback`).
+4. O **webhook é por mentor** e é definido automaticamente em cada preferência
+   (`/api/mp/webhook/<mentorId>`) — não precisa cadastrar uma URL fixa. (Opcional:
+   deixe `/api/mp/webhook` como URL padrão no painel; ela apenas reconhece o evento.)
+5. **Fluxo do mentor:** no onboarding, clicar em *Conectar Mercado Pago* →
+   autorizar com uma **conta de teste vendedor** → o perfil pode ser publicado.
+6. **Teste de ponta a ponta:** como aluno, agende um horário e pague com um
+   [comprador de teste](https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/additional-content/your-integrations/test/accounts)
+   (Pix/cartão de teste). Confira no painel do MP que o valor caiu no **vendedor**
+   e a `marketplace_fee` na conta da **plataforma**.
 
-> Localmente o webhook do MP precisa de uma URL pública — use `ngrok` ou similar
-> apontando para a porta 3000 e configure essa URL no painel do MP.
+> O OAuth e o webhook precisam de URL pública. Localmente use `ngrok` (ou
+> similar) apontando para a porta 3000 e ajuste `NEXT_PUBLIC_SITE_URL` /
+> `MERCADOPAGO_REDIRECT_URI` para a URL do túnel.
+
+### Contas de teste (split)
+
+Para testar o split você precisa de **duas contas de teste** criadas no painel
+do MP: uma de **vendedor** (o mentor conecta via OAuth) e uma de **comprador**
+(o aluno paga). O dinheiro de teste circula entre elas.
 
 ## Limpeza de holds expirados
 
@@ -113,6 +137,6 @@ supabase/       # migrations SQL + seed
 
 ## Roadmap (fase 2+)
 
-Login/importação via LinkedIn, avaliações e notas, mensagens in-app, split
-automático de pagamento (OAuth Mercado Pago), integração Google Calendar,
-reagendamento self-service, gravação de sessão.
+Login/importação via LinkedIn, avaliações e notas, mensagens in-app,
+integração Google Calendar, reagendamento self-service, gravação de sessão.
+_(Split automático de pagamento via OAuth do Mercado Pago já implementado.)_

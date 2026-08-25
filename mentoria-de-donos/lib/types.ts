@@ -20,7 +20,20 @@ export interface Profile {
   currency: string;
   timezone: string;
   is_published: boolean;
+  mp_connected: boolean;
   created_at: string;
+}
+
+export interface MentorPaymentAccount {
+  mentor_id: string;
+  provider: string;
+  mp_user_id: string | null;
+  access_token: string;
+  refresh_token: string | null;
+  public_key: string | null;
+  expires_at: string | null;
+  connected_at: string;
+  updated_at: string;
 }
 
 export interface AvailabilityRule {

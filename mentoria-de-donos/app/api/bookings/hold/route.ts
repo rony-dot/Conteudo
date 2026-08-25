@@ -52,6 +52,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Mentor não encontrado." }, { status: 404 });
   }
   const mentorProfile = mentor as Profile;
+  if (!mentorProfile.mp_connected) {
+    return NextResponse.json(
+      { error: "Este mentor ainda não habilitou pagamentos. Tente mais tarde." },
+      { status: 409 },
+    );
+  }
   if (!mentorProfile.hourly_rate_cents) {
     return NextResponse.json(
       { error: "Mentor sem preço definido." },

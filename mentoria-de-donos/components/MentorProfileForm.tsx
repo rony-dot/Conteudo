@@ -6,7 +6,13 @@ import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import { slugify } from "@/lib/format";
 
-export function MentorProfileForm({ profile }: { profile: Profile }) {
+export function MentorProfileForm({
+  profile,
+  mpConnected,
+}: {
+  profile: Profile;
+  mpConnected: boolean;
+}) {
   const supabase = createClient();
   const router = useRouter();
 
@@ -55,6 +61,13 @@ export function MentorProfileForm({ profile }: { profile: Profile }) {
     if (publish) {
       if (!fullName || !headline || !rateCents) {
         setError("Preencha nome, headline e preço/hora antes de publicar.");
+        setSaving(false);
+        return;
+      }
+      if (!mpConnected) {
+        setError(
+          "Conecte sua conta Mercado Pago (abaixo) antes de publicar o perfil.",
+        );
         setSaving(false);
         return;
       }

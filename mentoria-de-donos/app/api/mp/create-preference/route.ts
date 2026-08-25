@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createPreference } from "@/lib/mercadopago";
+import { createPreference, getValidMentorToken } from "@/lib/mercadopago";
 import type { Booking } from "@/lib/types";
 
 export async function POST(request: Request) {
@@ -46,11 +46,23 @@ export async function POST(request: Request) {
     .eq("id", b.mentor_id)
     .maybeSingle();
 
+  // Split: o pagamento é criado NA CONTA DO MENTOR (token do vendedor).
+  const sellerToken = await getValidMentorToken(b.mentor_id);
+  if (!sellerToken) {
+    return NextResponse.json(
+      { error: "O mentor ainda não conectou a conta de recebimento." },
+      { status: 409 },
+    );
+  }
+
   try {
     const pref = await createPreference({
       bookingId: b.id,
+      mentorId: b.mentor_id,
+      sellerAccessToken: sellerToken,
       title: `Mentoria com ${mentor?.full_name ?? "mentor"} (1h)`,
       priceCents: b.price_cents,
+      marketplaceFeeCents: b.platform_fee_cents,
       payerEmail: user.email ?? undefined,
     });
     return NextResponse.json({ init_point: pref.init_point });
