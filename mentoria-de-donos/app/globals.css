@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0c0a09;
+  --panel: #1a1613;
+  --panel2: #231c17;
+  --text: #f3ede7;
+  --muted: #b3a99f;
+  --line: #3a2f26;
+  --accent: #f97316;
+  --accent2: #e8530e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-brand to-brand-dark px-6 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white/5 px-5 py-2.5 font-semibold text-[var(--text)] transition hover:bg-white/10;
+  }
+  .card {
+    @apply rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-6;
+  }
+  .input {
+    @apply w-full rounded-lg border border-[var(--line)] bg-[var(--panel2)] px-4 py-2.5 text-[var(--text)] outline-none placeholder:text-[var(--muted)] focus:border-brand;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-[var(--muted)];
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full border border-[var(--line)] bg-white/5 px-3 py-1 text-xs font-medium text-[var(--muted)];
+  }
+}
